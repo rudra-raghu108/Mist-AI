@@ -1,0 +1,931 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Hero - Gamified Habit Tracker</title>
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --background-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --background-color: #1e293b;
+            --card-bg: #334155;
+            --text-color: #f1f5f9;
+            --text-light: #94a3b8;
+            --border-color: #475569;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: var(--transition);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* Buttons */
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+        }
+
+        .btn-accent {
+            background: var(--accent-color);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Habit Cards */
+        .habit-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .habit-card:hover {
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .habit-icon {
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 50%;
+        }
+
+        .habit-info {
+            flex: 1;
+        }
+
+        .habit-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .habit-streak {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+        }
+
+        .habit-complete {
+            background: var(--success-color);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            background: var(--border-color);
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 20px 20px;
+            animation: move 2s linear infinite;
+        }
+
+        @keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 20px 0;
+            }
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 200px;
+            margin: 1rem 0;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--radius);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Form Elements */
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--card-bg);
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Badges */
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .badge {
+            text-align: center;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 2px solid var(--border-color);
+        }
+
+        .badge-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        /* Achievement Popup */
+        .achievement-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--accent-color);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .achievement-popup.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-controls {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span>🏆</span>
+                    Habit Hero
+                </div>
+                <div class="nav-controls">
+                    <button id="themeToggle">🌙</button>
+                    <button id="addHabitBtn">+ New Habit</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Welcome Section -->
+        <section class="card fade-in">
+            <h1>Welcome back, Hero! 👋</h1>
+            <p id="dailyQuote">"The journey of a thousand miles begins with a single step."</p>
+        </section>
+
+        <!-- Stats Dashboard -->
+        <section class="dashboard-grid">
+            <div class="card stat-card">
+                <div class="stat-number" id="currentStreak">0</div>
+                <div class="stat-label">Current Streak 🔥</div>
+            </div>
+            
+            <div class="card stat-card">
+                <div class="stat-number" id="totalHabits">0</div>
+                <div class="stat-label">Total Habits</div>
+            </div>
+            
+            <div class="card stat-card">
+                <div class="stat-number" id="completionRate">0%</div>
+                <div class="stat-label">Completion Rate</div>
+            </div>
+            
+            <div class="card stat-card">
+                <div class="stat-number" id="xpTotal">0</div>
+                <div class="stat-label">XP Points</div>
+            </div>
+        </section>
+
+        <!-- Progress Section -->
+        <section class="card">
+            <h2>Weekly Progress</h2>
+            <div class="chart-container">
+                <canvas id="progressChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Habits List -->
+        <section class="card">
+            <h2>Your Habits</h2>
+            <div id="habitsList">
+                <!-- Habits will be dynamically added here -->
+            </div>
+        </section>
+
+        <!-- Mood Tracking -->
+        <section class="card">
+            <h2>How are you feeling today?</h2>
+            <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                <button class="mood-btn" data-mood="happy">😊 Happy</button>
+                <button class="mood-btn" data-mood="neutral">😐 Neutral</button>
+                <button class="mood-btn" data-mood="sad">😔 Sad</button>
+            </div>
+            <div id="moodStats">
+                <!-- Mood statistics will be shown here -->
+            </div>
+        </section>
+
+        <!-- Achievements -->
+        <section class="card">
+            <h2>Your Achievements</h2>
+            <div class="badges-grid" id="badgesContainer">
+                <!-- Badges will be dynamically added here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Add Habit Modal -->
+    <div class="modal" id="addHabitModal">
+        <div class="modal-content">
+            <h2>Add New Habit</h2>
+            <form id="habitForm">
+                <input type="text" id="habitName" placeholder="Habit name" required>
+                <select id="habitIcon" required>
+                    <option value="">Select an icon</option>
+                    <option value="💧">💧 Water</option>
+                    <option value="📖">📖 Reading</option>
+                    <option value="🏃">🏃 Exercise</option>
+                    <option value="🧘">🧘 Meditation</option>
+                    <option value="🍎">🍎 Healthy Eating</option>
+                    <option value="💤">💤 Sleep</option>
+                </select>
+                <select id="habitFrequency" required>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="custom">Custom</option>
+                </select>
+                <button type="submit">Add Habit</button>
+            </form>
+            <button onclick="closeModal('addHabitModal')" style="margin-top: 1rem;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievementPopup">
+        <h3>🎉 Achievement Unlocked!</h3>
+        <p id="achievementMessage"></p>
+    </div>
+
+    <script>
+        // Global state
+        const state = {
+            habits: [],
+            mood: {},
+            achievements: [],
+            settings: {
+                theme: 'light'
+            }
+        };
+
+        // DOM Elements
+        const elements = {
+            habitsList: document.getElementById('habitsList'),
+            addHabitModal: document.getElementById('addHabitModal'),
+            habitForm: document.getElementById('habitForm'),
+            themeToggle: document.getElementById('themeToggle'),
+            achievementPopup: document.getElementById('achievementPopup'),
+            badgesContainer: document.getElementById('badgesContainer'),
+            dailyQuote: document.getElementById('dailyQuote'),
+            currentStreak: document.getElementById('currentStreak'),
+            totalHabits: document.getElementById('totalHabits'),
+            completionRate: document.getElementById('completionRate'),
+            xpTotal: document.getElementById('xpTotal')
+        };
+
+        // Motivational Quotes
+        const quotes = [
+            "The only way to do great work is to love what you do.",
+            "Your future is created by what you do today, not tomorrow.",
+            "Small daily improvements are the key to staggering long-term results.",
+            "The hardest step is always the first one.",
+            "Consistency is what transforms average into excellence.",
+            "You don't have to be great to start, but you have to start to be great.",
+            "Every day is a new opportunity to become a better version of yourself.",
+            "The pain of discipline is nothing like the pain of regret.",
+            "Success is the sum of small efforts, repeated day in and day out.",
+            "Your habits will determine your future."
+        ];
+
+        // Achievement Badges
+        const badges = [
+            { id: 'first_habit', name: 'First Step', icon: '🚀', description: 'Added your first habit', xp: 50 },
+            { id: '7_day_streak', name: 'Weekly Warrior', icon: '🔥', description: '7-day streak', xp: 100 },
+            { id: '30_day_streak', name: 'Monthly Master', icon: '🏆', description: '30-day streak', xp: 300 },
+            { id: '100_day_streak', name: 'Century Club', icon: '💯', description: '100-day streak', xp: 1000 },
+            { id: 'perfect_week', name: 'Perfect Week', icon: '⭐', description: '100% completion for a week', xp: 200 },
+            { id: 'mood_tracker', name: 'Mood Master', icon: '😊', description: 'Logged mood for 7 days', xp: 150 }
+        ];
+
+        // Initialize the application
+        function initApp() {
+            loadFromStorage();
+            setupEventListeners();
+            renderDashboard();
+            updateStats();
+            showRandomQuote();
+        }
+
+        // Local Storage Functions
+        function saveToStorage() {
+            localStorage.setItem('habitHeroData', JSON.stringify(state));
+        }
+
+        function loadFromStorage() {
+            const savedData = localStorage.getItem('habitHeroData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                state.habits = data.habits || [];
+                state.mood = data.mood || {};
+                state.achievements = data.achievements || [];
+                state.settings = data.settings || { theme: 'light' };
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            elements.habitForm.addEventListener('submit', handleAddHabit);
+            elements.themeToggle.addEventListener('click', toggleTheme);
+            
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    logMood(e.target.dataset.mood);
+                });
+            });
+
+            // Close modal when clicking outside
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.classList.remove('active');
+                }
+            });
+        }
+
+        // Habit Management
+        function handleAddHabit(e) {
+            e.preventDefault();
+            const name = document.getElementById('habitName').value;
+            const icon = document.getElementById('habitIcon').value;
+            const frequency = document.getElementById('habitFrequency').value;
+
+            const newHabit = {
+                id: Date.now(),
+                name,
+                icon,
+                frequency,
+                streak: 0,
+                completed: false,
+                history: [],
+                createdAt: new Date().toISOString()
+            };
+
+            state.habits.push(newHabit);
+            saveToStorage();
+            renderHabits();
+            updateStats();
+            closeModal('addHabitModal');
+            elements.habitForm.reset();
+
+            // Check for first habit achievement
+            if (state.habits.length === 1) {
+                unlockAchievement('first_habit');
+            }
+        }
+
+        function toggleHabitCompletion(habitId) {
+            const habit = state.habits.find(h => h.id === habitId);
+            if (habit) {
+                const today = new Date().toDateString();
+                const todayIndex = habit.history.findIndex(entry => entry.date === today);
+                
+                if (todayIndex === -1) {
+                    // Mark as completed today
+                    habit.history.push({ date: today, completed: true });
+                    habit.completed = true;
+                    
+                    // Update streak
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayStr = yesterday.toDateString();
+                    
+                    const yesterdayEntry = habit.history.find(entry => entry.date === yesterdayStr);
+                    if (yesterdayEntry && yesterdayEntry.completed) {
+                        habit.streak++;
+                    } else {
+                        habit.streak = 1;
+                    }
+                    
+                    // Add XP
+                    addXP(10 * habit.streak);
+                    
+                    // Check achievements
+                    checkStreakAchievements(habit.streak);
+                    checkPerfectWeek();
+                    
+                } else {
+                    // Toggle completion
+                    habit.history[todayIndex].completed = !habit.history[todayIndex].completed;
+                    habit.completed = habit.history[todayIndex].completed;
+                }
+                
+                saveToStorage();
+                renderHabits();
+                updateStats();
+            }
+        }
+
+        // Mood Tracking
+        function logMood(moodType) {
+            const today = new Date().toDateString();
+            state.mood[today] = moodType;
+            saveToStorage();
+            
+            // Check for mood tracking achievement
+            const moodEntries = Object.keys(state.mood).length;
+            if (moodEntries >= 7 && !state.achievements.includes('mood_tracker')) {
+                unlockAchievement('mood_tracker');
+            }
+            
+            updateMoodStats();
+        }
+
+        // Achievement System
+        function unlockAchievement(achievementId) {
+            if (!state.achievements.includes(achievementId)) {
+                state.achievements.push(achievementId);
+                saveToStorage();
+                
+                const achievement = badges.find(b => b.id === achievementId);
+                if (achievement) {
+                    showAchievementPopup(achievement);
+                    addXP(achievement.xp);
+                }
+                
+                renderBadges();
+            }
+        }
+
+        function checkStreakAchievements(streak) {
+            if (streak === 7) unlockAchievement('7_day_streak');
+            if (streak === 30) unlockAchievement('30_day_streak');
+            if (streak === 100) unlockAchievement('100_day_streak');
+        }
+
+        function checkPerfectWeek() {
+            // Implement perfect week logic
+            const today = new Date();
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
+            
+            let perfectWeek = true;
+            state.habits.forEach(habit => {
+                const weekCompletions = habit.history.filter(entry => {
+                    const entryDate = new Date(entry.date);
+                    return entryDate >= weekStart && entryDate <= today && entry.completed;
+                });
+                if (weekCompletions.length < 7) perfectWeek = false;
+            });
+            
+            if (perfectWeek) unlockAchievement('perfect_week');
+        }
+
+        // XP System
+        function addXP(amount) {
+            // XP is stored in settings
+            state.settings.xp = (state.settings.xp || 0) + amount;
+            saveToStorage();
+            updateStats();
+        }
+
+        // UI Rendering
+        function renderDashboard() {
+            renderHabits();
+            renderBadges();
+            updateMoodStats();
+            renderProgressChart();
+        }
+
+        function renderHabits() {
+            elements.habitsList.innerHTML = '';
+            
+            state.habits.forEach(habit => {
+                const habitCard = document.createElement('div');
+                habitCard.className = 'habit-card card';
+                habitCard.innerHTML = `
+                    <div class="habit-icon">${habit.icon}</div>
+                    <div class="habit-info">
+                        <div class="habit-name">${habit.name}</div>
+                        <div class="habit-streak">${habit.streak} day streak 🔥</div>
+                    </div>
+                    <div class="habit-complete" onclick="toggleHabitCompletion(${habit.id})">
+                        ${habit.completed ? '✓' : '+'}
+                    </div>
+                `;
+                elements.habitsList.appendChild(habitCard);
+            });
+            
+            if (state.habits.length === 0) {
+                elements.habitsList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-light);">
+                        <p>No habits yet! Add your first habit to get started.</p>
+                        <button onclick="openModal('addHabitModal')" style="margin-top: 1rem;">Add Your First Habit</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderBadges() {
+            elements.badgesContainer.innerHTML = '';
+            
+            badges.forEach(badge => {
+                const isUnlocked = state.achievements.includes(badge.id);
+                const badgeElement = document.createElement('div');
+                badgeElement.className = `badge ${isUnlocked ? '' : 'locked'}`;
+                badgeElement.innerHTML = `
+                    <div class="badge-icon">${badge.icon}</div>
+                    <div class="badge-name">${badge.name}</div>
+                    ${isUnlocked ? '' : '<div class="badge-status">Locked</div>'}
+                `;
+                elements.badgesContainer.appendChild(badgeElement);
+            });
+        }
+
+        function renderProgressChart() {
+            const canvas = document.getElementById('progressChart');
+            const ctx = canvas.getContext('2d');
+            
+            // Simple bar chart implementation
+            const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const today = new Date();
+            const weekData = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toDateString();
+                
+                let completions = 0;
+                state.habits.forEach(habit => {
+                    const entry = habit.history.find(h => h.date === dateStr);
+                    if (entry && entry.completed) completions++;
+                });
+                
+                weekData.push({
+                    day: weekDays[date.getDay()],
+                    completions: completions,
+                    total: state.habits.length
+                });
+            }
+            
+            // Draw chart
+            const width = canvas.width;
+            const height = canvas.height;
+            const barWidth = (width - 100) / 7;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw bars
+            weekData.forEach((day, index) => {
+                const x = 50 + index * barWidth;
+                const barHeight = (day.completions / Math.max(day.total, 1)) * (height - 60);
+                const y = height - 40 - barHeight;
+                
+                // Bar
+                ctx.fillStyle = day.completions > 0 ? '#4f46e5' : '#e2e8f0';
+                ctx.fillRect(x, y, barWidth - 10, barHeight);
+                
+                // Label
+                ctx.fillStyle = '#64748b';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(day.day, x + (barWidth - 10) / 2, height - 20);
+                
+                // Value
+                if (day.completions > 0) {
+                    ctx.fillStyle = '#334155';
+                    ctx.fillText(day.completions, x + (barWidth - 10) / 2, y - 5);
+                }
+            });
+        }
+
+        // Stats and Updates
+        function updateStats() {
+            // Current streak (longest active streak among habits)
+            const currentStreak = Math.max(...state.habits.map(h => h.streak), 0);
+            elements.currentStreak.textContent = currentStreak;
+            
+            // Total habits
+            elements.totalHabits.textContent = state.habits.length;
+            
+            // Completion rate (today)
+            const todayCompletions = state.habits.filter(h => h.completed).length;
+            const completionRate = state.habits.length > 0 
+                ? Math.round((todayCompletions / state.habits.length) * 100) 
+                : 0;
+            elements.completionRate.textContent = `${completionRate}%`;
+            
+            // XP total
+            elements.xpTotal.textContent = state.settings.xp || 0;
+        }
+
+        function updateMoodStats() {
+            const moodStats = document.getElementById('moodStats');
+            const moodCounts = { happy: 0, neutral: 0, sad: 0 };
+            
+            Object.values(state.mood).forEach(mood => {
+                if (moodCounts.hasOwnProperty(mood)) {
+                    moodCounts[mood]++;
+                }
+            });
+            
+            const total = Object.values(moodCounts).reduce((sum, count) => sum + count, 0);
+            
+            if (total > 0) {
+                moodStats.innerHTML = `
+                    <div style="margin-top: 1rem;">
+                        <h3>Mood Summary</h3>
+                        <p>😊 Happy: ${moodCounts.happy} (${Math.round((moodCounts.happy / total) * 100)}%)</p>
+                        <p>😐 Neutral: ${moodCounts.neutral} (${Math.round((moodCounts.neutral / total) * 100)}%)</p>
+                        <p>😔 Sad: ${moodCounts.sad} (${Math.round((moodCounts.sad / total) * 100)}%)</p>
+                    </div>
+                `;
+            } else {
+                moodStats.innerHTML = '<p>Log your mood to see statistics here!</p>';
+            }
+        }
+
+        // UI Utilities
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function toggleTheme() {
+            const newTheme = state.settings.theme === 'light' ? 'dark' : 'light';
+            state.settings.theme = newTheme;
+            document.documentElement.setAttribute('data-theme', newTheme);
+            elements.themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
+            saveToStorage();
+        }
+
+        function showAchievementPopup(achievement) {
+            const popup = document.getElementById('achievementPopup');
+            const message = document.getElementById('achievementMessage');
+            
+            message.textContent = achievement.description;
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
+
+        function showRandomQuote() {
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            elements.dailyQuote.textContent = `"${randomQuote}"`;
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        // Make functions available globally for HTML onclick
+        window.toggleHabitCompletion = toggleHabitCompletion;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+    </script>
+</body>
+</html>
