@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SRM MIST AI Design System - Beautiful University Theme */
+
+@layer base {
+  :root {
+    /* Light Mode - Original Streamlit Colors */
+    --background: 200 50% 85%; /* #B9D9EB equivalent */
+    --foreground: 220 100% 15%; /* Dark text */
+
+    /* SRM Brand Colors - Matching Original */
+    --srm-primary: 240 100% 27%; /* Original primary blue */
+    --srm-secondary: 200 95% 45%; /* Light blue */
+    --srm-accent: 280 85% 60%; /* Purple accent */
+    --srm-gold: 45 95% 55%; /* Gold accent */
+
+    /* Enhanced Color Palette */
+    --card: 210 100% 97%; /* #F0F8FF equivalent */
+    --card-foreground: 220 100% 15%;
+
+    --popover: 210 100% 97%;
+    --popover-foreground: 220 100% 15%;
+
+    /* Chat Bubbles - Original Colors */
+    --primary: 220 100% 18%; /* #132257 equivalent - dark blue for chat bubbles */
+    --primary-foreground: 210 40% 98%; /* White text on dark blue */
+
+    --secondary: 200 50% 85%; /* Light blue background */
+    --secondary-foreground: 220 100% 15%; /* Dark text */
+
+    --muted: 200 40% 90%;
+    --muted-foreground: 220 30% 40%;
+
+    --accent: 280 85% 60%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 200 30% 80%;
+    --input: 210 100% 97%;
+    --ring: 240 100% 27%;
+
+    /* Beautiful Gradients - Streamlit Style */
+--gradient-primary: linear-gradient(
+    135deg,
+    hsl(204 100% 20%) 0%,  /* #00416A */
+    hsl(205 65% 69%) 100%  /* #76ABDF */
+  );
+    --gradient-secondary: linear-gradient(135deg, hsl(240 100% 40%) 0%, hsl(280 85% 60%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(200 95% 45%) 0%, hsl(280 85% 60%) 100%);
+    --gradient-golden: linear-gradient(135deg, hsl(45 95% 55%) 0%, hsl(35 85% 50%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(200 50% 85%) 0%, hsl(200 50% 85%) 100%);
+    --gradient-chat: linear-gradient(135deg, hsl(200 50% 85%) 0%, hsl(210 100% 97%) 100%);
+    --gradient-button: hsl(309 7% 58%); /* #9a8c98 for light theme */
+    --gradient-button-hover: hsl(309 7% 53%); /* Slightly darker on hover */
+    --button-suggestion-text: hsl(210 11% 23%); /* #343a40 for button text */
+    --gradient-card: linear-gradient(135deg, hsl(210 100% 97%) 0%, hsl(200 60% 90%) 50%, hsl(210 100% 97%) 100%);
+    --gradient-header: linear-gradient(135deg, hsl(240 75% 65%) 0%, hsl(280 60% 50%) 50%, hsl(320 70% 60%) 100%);
+    --gradient-mist-box: linear-gradient(135deg, hsl(220 38% 20%) 0%, hsl(215 25% 67%) 100%);
+    /* Beautiful Shadows */
+    --shadow-soft: 0 4px 20px hsl(220 30% 30% / 0.15);
+    --shadow-medium: 0 8px 30px hsl(220 30% 30% / 0.20);
+    --shadow-strong: 0 15px 50px hsl(220 30% 30% / 0.25);
+    --shadow-glow: 0 0 30px hsl(220 100% 18% / 0.4);
+    --shadow-accent: 0 8px 25px hsl(280 85% 60% / 0.25);
+
+    /* Enhanced Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-fade: opacity 0.2s ease-in-out;
+
+    --radius: 0.75rem;
+
+    /* Sidebar Enhancement - Original Style */
+    --sidebar-background: 193 67% 79%; /* #5D8AA8 */
+    --sidebar-foreground: 220 100% 15%;
+    --sidebar-primary: 220 50% 70%; /* #6699CC */
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 200 60% 70%;
+    --sidebar-accent-foreground: 220 100% 15%;
+    --sidebar-border: 200 50% 60%;
+    --sidebar-ring: 240 100% 27%;
+  }
+
+  .dark {
+    /* Dark Theme Colors */
+    --background: 0 0% 1%; /* #020202 equivalent */
+    --foreground: 210 40% 95%;
+
+    --card: 220 15% 12%;
+    --card-foreground: 210 40% 95%;
+
+    --popover: 220 15% 12%;
+    --popover-foreground: 210 40% 95%;
+
+    --primary: 200 95% 45%;
+    --primary-foreground: 220 20% 8%;
+
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 210 40% 95%;
+
+    --muted: 220 15% 15%;
+    --muted-foreground: 220 10% 65%;
+
+    --accent: 280 85% 60%;
+    --accent-foreground: 220 20% 8%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 210 40% 95%;
+
+    --border: 220 15% 20%;
+    --input: 220 15% 15%;
+    --ring: 200 95% 45%;
+
+    /* Dark Theme Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(200 95% 45%) 0%, hsl(240 100% 40%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(280 85% 60%) 0%, hsl(200 95% 45%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(240 100% 40%) 0%, hsl(280 85% 60%) 100%);
+    --gradient-golden: linear-gradient(135deg, hsl(45 90% 60%) 0%, hsl(35 80% 55%) 100%);
+    --gradient-hero: hsl(0 0% 1%); /* Pure black #020202 for dark mode */
+    --gradient-chat: hsl(0 0% 1%); /* Pure black #020202 for dark mode */
+    --gradient-button: linear-gradient(135deg, hsl(240 75% 65%) 0%, hsl(280 60% 50%) 100%);
+    --gradient-button-hover: linear-gradient(135deg, hsl(280 60% 50%) 0%, hsl(240 75% 65%) 100%);
+    --button-suggestion-text: hsl(0 0% 100%); /* White text for dark theme */
+    --gradient-card: linear-gradient(135deg, hsl(220 15% 12%) 0%, hsl(220 20% 15%) 50%, hsl(220 15% 12%) 100%);
+    --gradient-header: linear-gradient(135deg, hsl(240 75% 65%) 0%, hsl(280 60% 50%) 50%, hsl(320 70% 60%) 100%);
+
+    /* Dark Theme Shadows */
+    --shadow-soft: 0 4px 20px hsl(0 0% 0% / 0.3);
+    --shadow-medium: 0 8px 30px hsl(0 0% 0% / 0.4);
+    --shadow-strong: 0 15px 50px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 30px hsl(200 95% 45% / 0.4);
+    --shadow-accent: 0 8px 25px hsl(280 85% 60% / 0.3);
+
+    /* Dark Sidebar */
+    --sidebar-background: 220 20% 10%;
+    --sidebar-foreground: 210 40% 95%;
+    --sidebar-primary: 200 95% 45%;
+    --sidebar-primary-foreground: 220 20% 8%;
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 220 15% 20%;
+    --sidebar-ring: 200 95% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
