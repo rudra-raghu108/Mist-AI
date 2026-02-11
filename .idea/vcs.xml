@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Demo/Mist" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Mist" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Mist-AI" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Mist/Mist" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Python" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/STEP" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/TypeScript/Blog-Space" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/TypeScript/srm-guide-bot" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/TypeScript/srm-guide-bot/backend" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/backend/mist-backend" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/backend2" vcs="Git" />
+  </component>
+</project>
