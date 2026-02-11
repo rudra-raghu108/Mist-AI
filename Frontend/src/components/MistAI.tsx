@@ -40,54 +40,71 @@ export const MistAI: React.FC = () => {
     localStorage.setItem('mist-ai-theme', isDark ? 'dark' : 'light');
   }, [isDark]);
 
-  // AI Response simulation
+  // Try backend first, fallback to local simulated response
   const generateResponse = useCallback(async (query: string): Promise<string> => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    // 1) Attempt backend call via Vite proxy
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: query }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data?.response === 'string') {
+          return data.response;
+        }
+      }
+    } catch (e) {
+      // ignore and fallback to local simulation
+    }
+
+    // 2) Local simulation fallback
+    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 800));
 
     const userName = profile.name || "Student";
     const campus = profile.campus !== 'Any campus' ? profile.campus : '';
-    
-    // Enhanced responses based on keywords
     const lowerQuery = query.toLowerCase();
-    
+
     if (lowerQuery.includes('hello') || lowerQuery.includes('hi') || lowerQuery.includes('hey')) {
       return `Hello ${userName}! 😊 I'm MIST AI, your dedicated SRM assistant. I'm here to help you with anything related to SRM University or any general questions you might have.`;
     }
-    
+
     if (lowerQuery.includes('admission') || lowerQuery.includes('apply')) {
       const campusInfo = campus ? ` for ${campus}` : '';
       return `🎓 **SRM Admissions${campusInfo}**\n\n• **Application Process**: Online applications through admissions portal\n• **Entrance Exams**: SRMJEEE for engineering, NEET for medical\n• **Deadlines**: Usually April-May for the academic year\n• **Documents**: 10th & 12th marksheets, entrance exam scores\n• **Fee Structure**: Varies by program and campus\n\nWould you like specific information about any program or campus?`;
     }
-    
+
     if (lowerQuery.includes('engineering') || lowerQuery.includes('courses')) {
       return `⚙️ **Top Engineering Programs at SRM**\n\n• **Computer Science & Engineering** - AI/ML, Cybersecurity specializations\n• **Electronics & Communication** - VLSI, IoT focus\n• **Mechanical Engineering** - Robotics, Automotive\n• **Civil Engineering** - Smart infrastructure\n• **Aerospace Engineering** - Cutting-edge research\n• **Biotechnology** - Healthcare applications\n\nAll programs feature industry partnerships, internships, and excellent placement records!`;
     }
-    
+
     if (lowerQuery.includes('hostel') || lowerQuery.includes('accommodation')) {
       const campusInfo = campus ? ` at ${campus}` : '';
       return `🏠 **Hostel Facilities${campusInfo}**\n\n• **Accommodation Types**: Single, double, and triple sharing rooms\n• **Facilities**: Wi-Fi, laundry, mess, recreational areas\n• **Security**: 24/7 security with CCTV surveillance\n• **Fees**: ₹80,000 - ₹1,50,000 per year (varies by room type)\n• **Amenities**: Gym, library, common rooms, medical facility\n\nSeparate hostels for boys and girls with modern amenities!`;
     }
-    
+
     if (lowerQuery.includes('placement') || lowerQuery.includes('job') || lowerQuery.includes('career')) {
       return `💼 **SRM Placement Highlights**\n\n• **Placement Rate**: 95%+ across all engineering branches\n• **Top Recruiters**: Google, Microsoft, Amazon, TCS, Infosys, Wipro\n• **Average Package**: ₹6-8 LPA\n• **Highest Package**: ₹50+ LPA\n• **Career Services**: Resume building, mock interviews, skill development\n• **Industry Connect**: Regular company visits, guest lectures\n\nDedicated placement cell ensures excellent career opportunities!`;
     }
-    
+
     if (lowerQuery.includes('event') || lowerQuery.includes('club') || lowerQuery.includes('activities')) {
-      return `🎪 **Campus Life & Events**\n\n• **Cultural Events**: Milan (cultural fest), technical symposiums\n• **Student Clubs**: 100+ clubs covering arts, sports, technology\n• **Sports**: Cricket, football, basketball courts, swimming pool\n• **Technical Clubs**: Robotics, coding, innovation labs\n• **Arts & Culture**: Dance, music, drama, literary societies\n• **International Events**: Model UN, cultural exchanges\n\nVibrant campus life with opportunities to explore your interests!`;
+      return `🎪 **Campus Life & Events**\n\n• **Cultural Events**: Milan (cultural fest), technical symposiums\n• **Student Clubs**: 100+ clubs covering arts, sports, technology\n• **Sports**: Cricket, football, basketball courts, swimming pool\n+• **Technical Clubs**: Robotics, coding, innovation labs\n• **Arts & Culture**: Dance, music, drama, literary societies\n• **International Events**: Model UN, cultural exchanges\n\nVibrant campus life with opportunities to explore your interests!`;
     }
-    
+
     if (lowerQuery.includes('fee') || lowerQuery.includes('cost') || lowerQuery.includes('tuition')) {
       const campusInfo = campus ? ` for ${campus}` : '';
       return `💰 **Fee Structure${campusInfo}**\n\n**Engineering Programs**:\n• **KTR Campus**: ₹2.5-4 LPA\n• **Other Campuses**: ₹1.5-3 LPA\n\n**Additional Costs**:\n• **Hostel**: ₹80,000-1,50,000/year\n• **Mess**: ₹50,000-70,000/year\n• **Books & Supplies**: ₹20,000-30,000/year\n\n**Scholarships Available**: Merit-based and need-based financial aid options!`;
     }
-    
-    // General SRM info
+
     if (lowerQuery.includes('srm') || lowerQuery.includes('university') || lowerQuery.includes('campus')) {
       return `🏫 **About SRM Institute of Science & Technology**\n\n• **Established**: 1985, leading private university\n• **Rankings**: Top 10 private engineering colleges in India\n• **Campuses**: Kattankulathur (main), Vadapalani, Ramapuram, Delhi NCR, Sonepat, Amaravati\n• **Students**: 50,000+ diverse student community\n• **Faculty**: 2,500+ qualified and experienced\n• **Research**: Strong focus on innovation and patents\n• **Global Presence**: International collaborations and student exchanges\n\nNIRF ranked with excellent industry connections!`;
     }
-    
-    // Default helpful response
+
     return `I understand you're asking about "${query}". As your SRM assistant, I'm here to help with:\n\n• 🎓 **Admissions & Applications**\n• 📚 **Academic Programs & Courses**\n• 🏠 **Campus Life & Facilities**\n• 💼 **Placements & Career Services**\n• 🎪 **Events & Student Activities**\n• 💰 **Fees & Scholarships**\n• 📍 **Campus Information**\n\nCould you be more specific about what aspect of SRM you'd like to know about? I'm also happy to help with any general questions!`;
   }, [profile]);
 
